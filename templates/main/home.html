@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabut</title>
+</head>
+<body>
+    <p>{{user}}</p>
+    <h4><a href="/">Back</a></h4>
+    <ul>
+    {% for course in courses %}
+        <li><a href="{% url 'detail_course' course.id %}">{{course}}</a></li>
+    {% endfor %}
+    </ul>
+
+    
+    {% if tcr_or_not %}
+        <a href="{% url 'add-course' %}">Add New</a>
+    {% endif %}
+        
+</body>
+</html>

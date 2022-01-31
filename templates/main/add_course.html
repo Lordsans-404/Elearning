@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=`, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #myDIV {
+    padding: 5px 5px;
+    }
+
+</style>
+<body>
+    <p>{{user}}</p>
+
+    <button onclick="myFunction()">Add New Course</button>
+    <div id="myDIV">
+        <form method="post">
+            {% csrf_token %}
+            <label for="name">Name Course</label>
+            <br>
+            {{form.name}}
+            <br><br>
+            {{form.class_id.label}}
+            <br>
+            {{form.class_id}}
+            <br>
+            <br>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+</body>
+<script>
+    function myFunction() {
+    var x = document.getElementById("myDIV");
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
+    }
+</script>
+</html>

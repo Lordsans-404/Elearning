@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>halooo</title>
+    <script src="{% url 'js-catlog' %}"></script>
+    <script src="{% static '/admin/js/core.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
+</head>
+<body>
+    <h2>Selamat Datang Di Mapel {{course}}</h2>
+    <br><br>
+    <p>List Absensi :</p>
+    <ul>
+        {% for attendancereq in attendance_req_list %}
+            <li>{{attendancereq}}</li>
+        {% endfor %}
+    </ul>
+    <button onclick="myFunction()">Add New Request</button>
+    <div id="myDIV" style="display: none;">
+        <form method="post">
+            {% csrf_token %}
+            {{form1.media}}
+            {{form1.as_p}}
+            <br>
+            <br>
+            
+        </form>
+        <button type="submit">Add</button>
+    </div>
+</body>
+<script>
+    function myFunction() {
+    var x = document.getElementById("myDIV");
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
+    }
+</script>
+</html>

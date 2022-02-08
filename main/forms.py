@@ -1,9 +1,9 @@
 from dataclasses import fields
-from tkinter import Widget
+from pyexpat import model
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from . import models
-from django.contrib.admin.widgets import AdminSplitDateTime
+from django.contrib.admin.widgets import AdminSplitDateTime,AdminTimeWidget
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -17,11 +17,8 @@ class AddNewCourse(forms.ModelForm):
         fields = ['name','teacher_id','class_id']
 
 class AddAttendanceReq(forms.ModelForm):
+    start_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
+    closed_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
     class Meta:
         model = models.AttendanceReq
-        fields = '__all__'
-        widgets = {
-            'start_time'     : AdminSplitDateTime(),
-            'closed_time'    : AdminSplitDateTime(),
-            'course_id'      : forms.TextInput(attrs={'class':'hidden'})
-        }
+        fields = ['is_closed']

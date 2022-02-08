@@ -1,10 +1,10 @@
 from multiprocessing import context
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .models import *
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from . import forms
-from django.urls import reverse
+from django.urls import reverse,reverse_lazy
 from django.views.generic import *
 from . import utils
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -50,8 +50,21 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
     model = Course
     form1 = forms.AddAttendanceReq
 
+    def post(self,request,**kwargs):
+        form = self.form1(request.POST)
+        if form.is_valid():
+            course = self.get_object()
+            start = form.cleaned_data['start_time']
+            closed = form.cleaned_data['closed_time']
+            is_closed = form.cleaned_data['is_closed']
+            att_req = AttendanceReq.objects.create(course_id=course,start_time=start,closed_time=closed,is_closed=is_closed)
+            att_req.save()
+
+        return redirect('homey')
+
     def get(self,request,**kwargs):
         context = {}
+        context['form1'] = self.form1
         user = request.user
         tcr_or_not = None
         object = self.get_object()
@@ -63,8 +76,6 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
             else :
                 context['form1'] = self.form1
                 return utils.DetailEdit_tcr(request,object,context)
-
-
         
 
 class AddCourse(LoginRequiredMixin,CreateView):

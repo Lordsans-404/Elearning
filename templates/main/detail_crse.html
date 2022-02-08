@@ -21,16 +21,21 @@
         {% endfor %}
     </ul>
     <button onclick="myFunction()">Add New Request</button>
-    <div id="myDIV" style="display: none;">
+    <div id="myDIV">
         <form method="post">
             {% csrf_token %}
             {{form1.media}}
-            {{form1.as_p}}
+            {{form1.start_time.label}}
+            {{form1.start_time}}
             <br>
+            {{form1.closed_time.label}}
+            {{form1.closed_time}}
             <br>
-            
+            {{form1.is_closed.label}}
+            {{form1.is_closed}}
+            <br>
+            <button type="submit">Add</button>         
         </form>
-        <button type="submit">Add</button>
     </div>
 </body>
 <script>

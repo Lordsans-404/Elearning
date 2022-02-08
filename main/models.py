@@ -54,8 +54,8 @@ class AttendanceReq(models.Model):
     is_closed = models.BooleanField(default=False)
 
     @property
-    def ayo(self):
-        pass
+    def check_time(self):
+        return self.start_time.times
 
     def __str__(self):
         return f'{self.course_id.name}  {self.date_time}'

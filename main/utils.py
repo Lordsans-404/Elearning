@@ -35,3 +35,7 @@ def DetailEdit_tcr(request,object,context):
         return render(request,'main/detail_crse.html',context)
     else:
         raise Http404
+
+
+def check_expd_absent(request):
+    pass

@@ -4,6 +4,7 @@ from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
+from datetime import datetime
 
 
 def Context_Std(user):
@@ -29,7 +30,7 @@ def DetailEdit_std(request,object,context):
 def DetailEdit_tcr(request,object,context):
     teacher = Teacher.objects.get(user=request.user)
     course = object
-    attendance_req = AttendanceReq.objects.all()
+    attendance_req = AttendanceReq.objects.filter(course_id=course)
     context['attendance_req_list'] = attendance_req
     if course.teacher_id == teacher:
         return render(request,'main/detail_crse.html',context)
@@ -37,5 +38,14 @@ def DetailEdit_tcr(request,object,context):
         raise Http404
 
 
-def check_expd_absent(request):
+def check_expd_absent(object):
+    attendance_req = AttendanceReq.objects.filter(course_id=object)
+    for request in attendance_req:
+        start_time = request.start_time.time()
+        closed_time = request.closed_time.time()
+        now = datetime.date.today()
+        if now.time > closed_time:
+            print('uhuy')
     pass
+
+

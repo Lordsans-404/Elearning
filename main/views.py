@@ -68,6 +68,7 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
         user = request.user
         tcr_or_not = None
         object = self.get_object()
+        utils.check_expd_absent(object)
         context['course'] = object
         if user.is_authenticated:
             if user.user_type == 'Std':

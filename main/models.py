@@ -58,7 +58,7 @@ class AttendanceReq(models.Model):
         return self.start_time.times
 
     def __str__(self):
-        return f'{self.course_id} Tanggal {self.date_time.date()}'
+        return f'{self.course_id} Tanggal {self.date_time.date()} Closed = {self.is_closed}'
 
     
 

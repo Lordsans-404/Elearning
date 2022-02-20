@@ -4,8 +4,7 @@ from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
-from datetime import datetime
-
+from django.utils import timezone
 
 def Context_Std(user):
     student = Student.objects.get(user=user)
@@ -39,13 +38,18 @@ def DetailEdit_tcr(request,object,context):
 
 
 def check_expd_absent(object):
-    attendance_req = AttendanceReq.objects.filter(course_id=object)
+    if object == "all":
+        attendance_req = AttendanceReq.objects.all()
+    else:
+        attendance_req = AttendanceReq.objects.filter(course_id=object)
+
     for request in attendance_req:
-        start_time = request.start_time.time()
-        closed_time = request.closed_time.time()
-        now = datetime.date.today()
-        if now.time > closed_time:
-            print('uhuy')
-    pass
-
-
+        closed_time = request.closed_time
+        noww = timezone.now()
+        if noww.date() == closed_time.date():
+            print('ahoy')
+            if noww.time() >= closed_time.time():
+                request.is_closed = True
+        else:
+            request.is_closed = True
+        request.save()

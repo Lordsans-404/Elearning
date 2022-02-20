@@ -16,6 +16,7 @@ from django.views.generic.edit import ModelFormMixin
 # Create your views here.
 def Main(request):
     model = Student.objects.all()
+    utils.check_expd_absent("all")
     context = {
         'student':model
     }
@@ -32,7 +33,7 @@ class HomeView(LoginRequiredMixin,TemplateView):
         tcr_or_not = None
         if user.is_authenticated:
             if user.user_type == 'Std':
-                context.update(utils.Contex_tStd(user))
+                context.update(utils.Context_Std(user))
                 tcr_or_not = False
 
             elif user.user_type == 'Adm':
@@ -68,8 +69,8 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
         user = request.user
         tcr_or_not = None
         object = self.get_object()
-        utils.check_expd_absent(object)
         context['course'] = object
+        utils.check_expd_absent(object)
         if user.is_authenticated:
             if user.user_type == 'Std':
                 return utils.DetailEdit_std(request,object,context)

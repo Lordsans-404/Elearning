@@ -1,3 +1,4 @@
+from gc import get_objects
 from multiprocessing import context
 from django.shortcuts import redirect, render
 from .models import *
@@ -8,7 +9,7 @@ from django.urls import reverse,reverse_lazy
 from django.views.generic import *
 from . import utils
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseNotFound,Http404
+from django.http import HttpResponse, HttpResponseNotFound,Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import ModelFormMixin
 
@@ -79,6 +80,17 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
                 context['form1'] = self.form1
                 return utils.DetailEdit_tcr(request,object,context)
         
+class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):
+    model = AttendanceReq
+    template_name = 'main/det_attend.html'
+
+
+    def post(self,request):
+        pass
+
+    def get(self,request,**kwargs):
+        object = self.get_object()
+        return render(request,self.template_name)
 
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course

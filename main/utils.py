@@ -20,6 +20,8 @@ def Context_Tcr(user):
 def DetailEdit_std(request,object,context):
     student =   Student.objects.get(user=request.user)
     classroom = Classroom.objects.get(name=student.class_id)
+    attendance_req = AttendanceReq.objects.filter(course_id=object)
+    context['attendance_req_list'] = attendance_req
     course = object
     if course.class_id == classroom:
         return render(request,'main/detail_crse.html',context)
@@ -47,7 +49,6 @@ def check_expd_absent(object):
         closed_time = request.closed_time
         noww = timezone.now()
         if noww.date() == closed_time.date():
-            print('ahoy')
             if noww.time() >= closed_time.time():
                 request.is_closed = True
         else:

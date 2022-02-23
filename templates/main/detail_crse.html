@@ -17,7 +17,9 @@
     <p>List Absensi :</p>
     <ul>
         {% for attendancereq in attendance_req_list %}
-            <li>{{attendancereq}}</li>
+            <li>
+                <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+            </li>
         {% endfor %}
     </ul>
     <button onclick="myFunction()">Add New Request</button>

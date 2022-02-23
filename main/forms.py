@@ -22,3 +22,7 @@ class AddAttendanceReq(forms.ModelForm):
     class Meta:
         model = models.AttendanceReq
         fields = ['is_closed']
+
+class MakeAbsent(forms.ModelForm):
+    class Meta:
+        pass

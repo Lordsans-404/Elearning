@@ -7,7 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+{% if tcr_true %}
 <body>
-    
+    <h3>{{object}}</h3>
+    <p>Ahoyy</p>
+    <ul>
+        {% for attendance in list_attend %}
+            <li>{{attendance}}</li>
+        {% endfor %}
+    </ul>
 </body>
+{% else %}
+<body>
+    <h3>{{object}}</h3>
+    <p>Anjayy alok</p>
+    <div class="container">
+        {% if form1 %}
+            <form method="post">
+                {% csrf_token %}
+                {{form1}}
+                <button type="submit">Post</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+{% endif %}
+
 </html>

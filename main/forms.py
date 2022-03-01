@@ -1,4 +1,4 @@
-from dataclasses import fields
+from dataclasses import field, fields
 from pyexpat import model
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -25,4 +25,8 @@ class AddAttendanceReq(forms.ModelForm):
 
 class MakeAbsent(forms.ModelForm):
     class Meta:
-        pass
+        model = models.Attendance
+        fields = ['status']
+        widgets = {'status':forms.RadioSelect}
+
+

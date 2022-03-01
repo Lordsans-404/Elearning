@@ -1,5 +1,3 @@
-from gc import get_objects
-from multiprocessing import context
 from django.shortcuts import redirect, render
 from .models import *
 from django.core.paginator import Paginator
@@ -47,50 +45,75 @@ class HomeView(LoginRequiredMixin,TemplateView):
         self.template_name = 'main/home.html'
         return context
 
-class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):
+class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# ini view untuk course
     template_name = 'main/detail_crse.html'
     model = Course
     form1 = forms.AddAttendanceReq
 
     def post(self,request,**kwargs):
-        form = self.form1(request.POST)
-        if form.is_valid():
-            course = self.get_object()
-            start = form.cleaned_data['start_time']
-            closed = form.cleaned_data['closed_time']
-            is_closed = form.cleaned_data['is_closed']
-            att_req = AttendanceReq.objects.create(course_id=course,start_time=start,closed_time=closed,is_closed=is_closed)
-            att_req.save()
+        if request.user.user_type != 'Tcr':
+            form = self.form1(request.POST)
+            if form.is_valid():
+                course = self.get_object()
+                start = form.cleaned_data['start_time']
+                closed = form.cleaned_data['closed_time']
+                is_closed = form.cleaned_data['is_closed']
+                att_req = AttendanceReq.objects.create(course_id=course,start_time=start,closed_time=closed,is_closed=is_closed)
+                att_req.save()
 
-        return redirect('homey')
+            return redirect('homey')
 
     def get(self,request,**kwargs):
         context = {}
-        context['form1'] = self.form1
         user = request.user
+        utils.check_user(user)
         tcr_or_not = None
         object = self.get_object()
         context['course'] = object
         utils.check_expd_absent(object)
         if user.is_authenticated:
+
             if user.user_type == 'Std':
                 return utils.DetailEdit_std(request,object,context)
 
-            else :
+            elif user.user_type == 'Tcr' :
                 context['form1'] = self.form1
                 return utils.DetailEdit_tcr(request,object,context)
+            
+            else:
+                raise Http404
         
 class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):
     model = AttendanceReq
     template_name = 'main/det_attend.html'
+    form1 = forms.MakeAbsent
 
 
-    def post(self,request):
-        pass
+    def post(self,request,**kwargs):
+        if request.user.user_type == 'Std':
+            form = self.form1(request.POST)
+            if form.is_valid():
+                student = Student.objects.get(user=request.user)
+                attreq_id = AttendanceReq.objects.get(id=kwargs['pk'])
+                utils.make_attendance(student,attreq_id,form.cleaned_data['status'])
+            return redirect('detail_course', kwargs['id'])
 
     def get(self,request,**kwargs):
         object = self.get_object()
-        return render(request,self.template_name)
+        context = {}
+        user = request.user
+        if user.is_authenticated:
+            context['object'] = object
+            if user.user_type == 'Std':
+                context.update(utils.check_no_double_attend(object,request))
+            
+            elif user.user_type == 'Tcr':
+                list_attendance = Attendance.objects.filter(attendanceReq_id=object)
+                context['list_attend'] = list_attendance
+                context['tcr_true'] = True
+            return render(request,self.template_name,context)
+            
+
 
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course

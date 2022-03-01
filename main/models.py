@@ -18,7 +18,7 @@ class Teacher(models.Model):
     description = models.CharField(max_length=255,null=True, blank=True)
 
     def __str__(self):
-        return self.user.username + ' Is Teacher'
+        return self.user.username
 
 class Classroom(models.Model):
     name = models.CharField(max_length=155)
@@ -32,7 +32,7 @@ class Student(models.Model):
     class_id = models.ForeignKey(Classroom,on_delete=models.SET_NULL,null=True,blank=True)
     
     def __str__(self):
-        return self.user.username + ' Is Student'
+        return self.user.username
 
 class Course(models.Model):
     name = models.CharField(max_length=255,null=True)
@@ -72,5 +72,6 @@ class Attendance(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(choices=ATTENDANCE_CHOICES,max_length=10,default='present')
 
-
+    def __str__(self):
+        return f'{self.student} {self.status} in {self.date_time.time().strftime("%H:%M:%S")}'
 

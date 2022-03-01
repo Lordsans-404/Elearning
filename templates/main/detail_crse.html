@@ -22,32 +22,40 @@
             </li>
         {% endfor %}
     </ul>
-    <button onclick="myFunction()">Add New Request</button>
-    <div id="myDIV">
-        <form method="post">
-            {% csrf_token %}
-            {{form1.media}}
-            {{form1.start_time.label}}
-            {{form1.start_time}}
-            <br>
-            {{form1.closed_time.label}}
-            {{form1.closed_time}}
-            <br>
-            {{form1.is_closed.label}}
-            {{form1.is_closed}}
-            <br>
-            <button type="submit">Add</button>         
-        </form>
+    <div id="on-form">
+        <button onclick="myFunction()">Add New Request</button>
+        <div id="myDIV">
+            <form method="post">
+                {% csrf_token %}
+                {{form1.media}}
+                {{form1.start_time.label}}
+                {{form1.start_time}}
+                <br>
+                {{form1.closed_time.label}}
+                {{form1.closed_time}}
+                <br>
+                {{form1.is_closed.label}}
+                {{form1.is_closed}}
+                <br>
+                <button type="submit">Add</button>         
+            </form>
+        </div>
     </div>
 </body>
 <script>
     function myFunction() {
-    var x = document.getElementById("myDIV");
-    if (x.style.display === "block") {
-        x.style.display = "none";
-    } else {
-        x.style.display = "block";
+        var x = document.getElementById("myDIV");
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } 
+        else {
+            x.style.display = "block";
+        }
     }
+    var user_type = "{{user.user_type}}"
+    if(user_type === "Std"){
+        var x = document.getElementById("on-form");
+        x.style.display = "none"
     }
 </script>
 </html>

@@ -1,10 +1,29 @@
 from audioop import add
 from multiprocessing import context
+from pyexpat import model
 from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
 from django.utils import timezone
+
+
+class Check_user(object):
+    
+    def check_user_type(self,user):
+        if user.is_authenticated:
+            if user.user_type == 'Std':
+                tcr_or_not = False
+
+            elif user.user_type == 'Adm':
+                tcr_or_not = False
+
+            else :
+                tcr_or_not = True
+
+    def if_std(self):
+        pass
+        
 
 def Context_Std(user):
     student = Student.objects.get(user=user)
@@ -54,3 +73,21 @@ def check_expd_absent(object):
         else:
             request.is_closed = True
         request.save()
+
+def make_attendance(student,attreq_id,status):
+    att_create = Attendance.objects.create(student=student,attendanceReq_id=attreq_id,status=status)
+    att_create.save()
+
+def check_no_double_attend(object,request):
+    student = Student.objects.get(user=request.user)
+    attendance = Attendance.objects
+    context = {}
+    try:
+        attendance.get(student=student,attendanceReq_id=object)
+        print('try')
+        return context
+    except:
+        context['form1'] = forms.MakeAbsent
+        print('except')
+        return context
+    

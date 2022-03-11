@@ -11,7 +11,7 @@
     <h4><a href="/">Back</a></h4>
     <ul>
     {% for course in courses %}
-        <li><a href="{% url 'detail_course' course.id %}">{{course}}</a></li>
+        <li><a href="{% url 'courses_page' course.id %}">{{course}}</a></li>
     {% endfor %}
     </ul>
 

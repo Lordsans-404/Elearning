@@ -10,7 +10,7 @@
 {% if tcr_true %}
 <body>
     <h3>{{object}}</h3>
-    <p>Ahoyy</p>
+    <p>Teacher</p>
     <ul>
         {% for attendance in list_attend %}
             <li>{{attendance}}</li>
@@ -20,7 +20,8 @@
 {% else %}
 <body>
     <h3>{{object}}</h3>
-    <p>Anjayy alok</p>
+    <p>Student</p>
+    {{expired}}
     <div class="container">
         {% if form1 %}
             <form method="post">

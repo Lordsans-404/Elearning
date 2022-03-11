@@ -22,38 +22,35 @@ def Main(request):
     return render(request,'main/main.html',context)
 
 
-class HomeView(LoginRequiredMixin,TemplateView):
+class HomeView(LoginRequiredMixin,TemplateView):# this view for homey
     model = Classroom
     
     def get_context_data(self,*args,**kwargs):
         request = self.request
         context =  super().get_context_data(**kwargs) 
         user = request.user
-        tcr_or_not = None
         if user.is_authenticated:
             if user.user_type == 'Std':
                 context.update(utils.Context_Std(user))
-                tcr_or_not = False
 
-            elif user.user_type == 'Adm':
-                tcr_or_not = False
-
-            else :
+            elif user.user_type == 'Tcr':
                 context.update(utils.Context_Tcr(user))
-                tcr_or_not = True
-        context['tcr_or_not'] = tcr_or_not
+                context['tcr_or_not'] = 'hola'
+
         self.template_name = 'main/home.html'
         return context
 
-class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# ini view untuk course
+class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# this view for courses_page
     template_name = 'main/detail_crse.html'
     model = Course
     form1 = forms.AddAttendanceReq
 
     def post(self,request,**kwargs):
-        if request.user.user_type != 'Tcr':
+        print(request.user.user_type)
+        if request.user.user_type == 'Tcr':
             form = self.form1(request.POST)
             if form.is_valid():
+                print('hey')
                 course = self.get_object()
                 start = form.cleaned_data['start_time']
                 closed = form.cleaned_data['closed_time']
@@ -66,24 +63,31 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# ini view untuk cou
     def get(self,request,**kwargs):
         context = {}
         user = request.user
-        utils.check_user(user)
-        tcr_or_not = None
         object = self.get_object()
         context['course'] = object
+        returnee = {'object':object,'form1':self.form1}
         utils.check_expd_absent(object)
         if user.is_authenticated:
 
             if user.user_type == 'Std':
-                return utils.DetailEdit_std(request,object,context)
+                context.update(utils.Context_Std(user,**returnee))
+                if object.class_id == context['classroom']:
+                    return render(request,'main/detail_crse.html',context)
+                else:
+                    raise Http404
 
             elif user.user_type == 'Tcr' :
                 context['form1'] = self.form1
-                return utils.DetailEdit_tcr(request,object,context)
-            
+                context.update(utils.Context_Tcr(user,**returnee))
+                if object.teacher_id == context['teacher']:
+                    return render(request,'main/detail_crse.html',context)
+                else:
+                    raise Http404
+
             else:
                 raise Http404
         
-class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):
+class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for detail_attend
     model = AttendanceReq
     template_name = 'main/det_attend.html'
     form1 = forms.MakeAbsent
@@ -96,7 +100,7 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):
                 student = Student.objects.get(user=request.user)
                 attreq_id = AttendanceReq.objects.get(id=kwargs['pk'])
                 utils.make_attendance(student,attreq_id,form.cleaned_data['status'])
-            return redirect('detail_course', kwargs['id'])
+            return redirect('courses_page', kwargs['id'])
 
     def get(self,request,**kwargs):
         object = self.get_object()
@@ -112,8 +116,6 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):
                 context['list_attend'] = list_attendance
                 context['tcr_true'] = True
             return render(request,self.template_name,context)
-            
-
 
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course

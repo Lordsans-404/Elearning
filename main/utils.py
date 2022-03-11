@@ -1,62 +1,32 @@
-from audioop import add
-from multiprocessing import context
-from pyexpat import model
 from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
 from django.utils import timezone
 
-
-class Check_user(object):
-    
-    def check_user_type(self,user):
-        if user.is_authenticated:
-            if user.user_type == 'Std':
-                tcr_or_not = False
-
-            elif user.user_type == 'Adm':
-                tcr_or_not = False
-
-            else :
-                tcr_or_not = True
-
-    def if_std(self):
-        pass
-        
-
-def Context_Std(user):
+def Context_Std(user,**kwargs):
+    context = {}
     student = Student.objects.get(user=user)
     classroom = Classroom.objects.get(name=student.class_id)
     courses = Course.objects.filter(class_id=classroom)
-    return {'courses':courses,}
+    context = {'classroom':classroom,'courses':courses}
+    if len(kwargs) > 0:
+        object = kwargs['object']
+        attendance_req = AttendanceReq.objects.filter(course_id=object)
+        context['attendance_req_list'] = attendance_req
+    return context
 
-def Context_Tcr(user):
+def Context_Tcr(user,**kwargs):
+    context = {}
     teacher = Teacher.objects.get(user=user)
     courses = Course.objects.filter(teacher_id=teacher)
-    return {'courses':courses}
+    context = {'teacher':teacher,'courses':courses}
+    if len(kwargs) > 0:
+        object = kwargs['object']
+        attendance_req = AttendanceReq.objects.filter(course_id=object)
+        context['attendance_req_list'] = attendance_req
 
-def DetailEdit_std(request,object,context):
-    student =   Student.objects.get(user=request.user)
-    classroom = Classroom.objects.get(name=student.class_id)
-    attendance_req = AttendanceReq.objects.filter(course_id=object)
-    context['attendance_req_list'] = attendance_req
-    course = object
-    if course.class_id == classroom:
-        return render(request,'main/detail_crse.html',context)
-    else:
-        raise Http404
-
-def DetailEdit_tcr(request,object,context):
-    teacher = Teacher.objects.get(user=request.user)
-    course = object
-    attendance_req = AttendanceReq.objects.filter(course_id=course)
-    context['attendance_req_list'] = attendance_req
-    if course.teacher_id == teacher:
-        return render(request,'main/detail_crse.html',context)
-    else:
-        raise Http404
-
+    return context
 
 def check_expd_absent(object):
     if object == "all":
@@ -81,13 +51,26 @@ def make_attendance(student,attreq_id,status):
 def check_no_double_attend(object,request):
     student = Student.objects.get(user=request.user)
     attendance = Attendance.objects
+    list_attend = attendance.filter(student=student,attendanceReq_id=object)
+
     context = {}
-    try:
-        attendance.get(student=student,attendanceReq_id=object)
-        print('try')
-        return context
-    except:
-        context['form1'] = forms.MakeAbsent
-        print('except')
-        return context
+    if object.is_closed:
+        context['expired'] = 'Sorry You are late'
+        if len(list_attend) < 1:
+            leng_list   = len(list_attend) - 1
+            list_attend[:leng_list].delete()
+
+    else:
+        if len(list_attend) == 1:
+            context['expired'] = "Thx For Submitting"
+            attendance.get(student=student,attendanceReq_id=object)
+
+        elif len(list_attend) == 0:
+            context['form1'] = forms.MakeAbsent
+            
+        else:
+            leng_list   = len(list_attend) - 1
+            list_attend[:leng_list].delete()    
+            print(attendance.filter(student=student,attendanceReq_id=object))
+    return context
     

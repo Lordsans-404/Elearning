@@ -12,16 +12,34 @@
     <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
 </head>
 <body>
+    <p>{{tcr_true}}</p>
     <h2>Selamat Datang Di Mapel {{course}}</h2>
     <br><br>
     <p>List Absensi :</p>
-    <ul>
-        {% for attendancereq in attendance_req_list %}
-            <li>
-                <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% if tcr_true %}
+        <ul>
+            {% for attendancereq in attendance_req_list %}
+                <li>
+                    <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+                    <form action="{% url 'remove-attendance' attendancereq.id %}" method="post">{% csrf_token %}<input type="submit" value="Delete"></form>
+                
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <ul>
+            {% for attendancereq in attendance_req_list %}
+                <li>
+                    {% if attendancereq.is_closed %}
+                        <p>{{attendancereq}}</p>
+                    {% else %}
+                        <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <div id="on-form">
         <button onclick="myFunction()">Add New Request</button>
         <div id="myDIV">

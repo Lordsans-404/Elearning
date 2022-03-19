@@ -60,6 +60,9 @@ class AttendanceReq(models.Model):
     def __str__(self):
         return f'{self.course_id} Tanggal {self.date_time.date()} Closed = {self.is_closed}'
 
+    def get_absolute_url(self):
+        return f'/my/course-{self.course_id}'
+
     
 
 class Attendance(models.Model):

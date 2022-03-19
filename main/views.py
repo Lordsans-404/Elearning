@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.shortcuts import redirect, render
 from .models import *
 from django.core.paginator import Paginator
@@ -79,6 +80,7 @@ class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# this view for cour
             elif user.user_type == 'Tcr' :
                 context['form1'] = self.form1
                 context.update(utils.Context_Tcr(user,**returnee))
+                context['tcr_true'] = True
                 if object.teacher_id == context['teacher']:
                     return render(request,'main/detail_crse.html',context)
                 else:
@@ -117,6 +119,9 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for de
                 context['tcr_true'] = True
             return render(request,self.template_name,context)
 
+
+# ==========================================<<<>>>>==================================================
+
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course
     form_class = forms.AddNewCourse
@@ -129,3 +134,6 @@ class AddCourse(LoginRequiredMixin,CreateView):
         # mengisi bagian teacher_id secara otomatis
         return super().form_valid(form)
 
+class RmvAttendance(DeleteView):
+    model = AttendanceReq
+    success_url = "/my/"

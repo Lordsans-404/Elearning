@@ -56,7 +56,8 @@ def check_no_double_attend(object,request):
     context = {}
     if object.is_closed:
         context['expired'] = 'Sorry You are late'
-        if len(list_attend) < 1:
+        print(list_attend)
+        if len(list_attend) > 1:
             leng_list   = len(list_attend) - 1
             list_attend[:leng_list].delete()
 
@@ -70,6 +71,7 @@ def check_no_double_attend(object,request):
             
         else:
             leng_list   = len(list_attend) - 1
+            print(leng_list)
             list_attend[:leng_list].delete()    
             print(attendance.filter(student=student,attendanceReq_id=object))
     return context

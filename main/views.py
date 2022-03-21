@@ -120,7 +120,7 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for de
             return render(request,self.template_name,context)
 
 
-# ==========================================<<<>>>>==================================================
+# ==========================================<<<<>>>>==================================================
 
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course
@@ -134,6 +134,17 @@ class AddCourse(LoginRequiredMixin,CreateView):
         # mengisi bagian teacher_id secara otomatis
         return super().form_valid(form)
 
-class RmvAttendance(DeleteView):
+class RmvAttendance(LoginRequiredMixin,DeleteView):
     model = AttendanceReq
     success_url = "/my/"
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        usr = self.request.user
+        tcr = Teacher.objects.get(user=usr)
+        course = Course.objects.get(id=self.object.course_id.id)
+        success_url = self.get_success_url()
+        if course.teacher_id == tcr:
+            self.object.delete()
+            return redirect(success_url)
+        else:
+            raise Http404

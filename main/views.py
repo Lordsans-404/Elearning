@@ -136,13 +136,13 @@ class AddCourse(LoginRequiredMixin,CreateView):
 
 class RmvAttendance(LoginRequiredMixin,DeleteView):
     model = AttendanceReq
-    success_url = "/my/"
+    success_url = "/my/course-"
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         usr = self.request.user
         tcr = Teacher.objects.get(user=usr)
         course = Course.objects.get(id=self.object.course_id.id)
-        success_url = self.get_success_url()
+        success_url = self.get_success_url() + str(course.id)
         if course.teacher_id == tcr:
             self.object.delete()
             return redirect(success_url)

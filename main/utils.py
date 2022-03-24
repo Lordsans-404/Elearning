@@ -1,3 +1,4 @@
+from tracemalloc import start
 from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
@@ -36,12 +37,26 @@ def check_expd_absent(object):
 
     for request in attendance_req:
         closed_time = request.closed_time
+        start_time = request.start_time
         noww = timezone.now()
-        if noww.date() == closed_time.date():
-            if noww.time() >= closed_time.time():
+        if request.is_closed == False: #if request is not closed
+            if noww.date() == start_time.date(): #if noww(date) is same as start_time(date)
+                if noww.time() <= start_time.time(): #if noww(time) less than start_time(time)
+                    request.is_closed = True # close the request
+                
+
+            elif noww.date() == closed_time.date(): #(else) if, now same as closed_time(date)
+                if noww.time() >= closed_time.time(): #if now, is more than the closed_time
+                    request.is_closed = True # close the request
+            
+            else: # if the now(date) is not same as the start and closed time(date)
                 request.is_closed = True
-        else:
-            request.is_closed = True
+        else: # if request is closed
+            if noww.date() == start_time.date(): # if start_time same as now
+                if noww.time() > start_time.time(): # if now has passing the start_time 
+                    print('yeeey')
+                    request.is_closed = False# open the request
+
         request.save()
 
 def make_attendance(student,attreq_id,status):
@@ -62,6 +77,7 @@ def check_no_double_attend(object,request):
             list_attend[:leng_list].delete()
 
     else:
+        print(len(list_attend),'oy')
         if len(list_attend) == 1:
             context['expired'] = "Thx For Submitting"
             attendance.get(student=student,attendanceReq_id=object)
@@ -71,8 +87,10 @@ def check_no_double_attend(object,request):
             
         else:
             leng_list   = len(list_attend) - 1
-            print(leng_list)
-            list_attend[:leng_list].delete()    
-            print(attendance.filter(student=student,attendanceReq_id=object))
+            for attend in list_attend[:leng_list]:
+                print(attend)
+                attend.delete()
+                
+            
     return context
     

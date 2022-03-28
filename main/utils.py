@@ -15,6 +15,7 @@ def Context_Std(user,**kwargs):
         object = kwargs['object']
         attendance_req = AttendanceReq.objects.filter(course_id=object)
         context['attendance_req_list'] = attendance_req
+        context['sub_courses'] = SubCourse.objects.filter(course_id=object)
     return context
 
 def Context_Tcr(user,**kwargs):
@@ -26,7 +27,7 @@ def Context_Tcr(user,**kwargs):
         object = kwargs['object']
         attendance_req = AttendanceReq.objects.filter(course_id=object)
         context['attendance_req_list'] = attendance_req
-
+        context['sub_courses'] = SubCourse.objects.filter(course_id=object)
     return context
 
 def check_expd_absent(object):

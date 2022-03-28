@@ -1,4 +1,3 @@
-from pyexpat import model
 from django.shortcuts import redirect, render
 from .models import *
 from django.core.paginator import Paginator
@@ -41,7 +40,7 @@ class HomeView(LoginRequiredMixin,TemplateView):# this view for homey
         self.template_name = 'main/home.html'
         return context
 
-class DetailEdit(LoginRequiredMixin,SingleObjectMixin,View):# this view for courses_page
+class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for courses_page
     template_name = 'main/detail_crse.html'
     model = Course
     form1 = forms.AddAttendanceReq

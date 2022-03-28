@@ -39,7 +39,12 @@
             {% endfor %}
         </ul>
     {% endif %}
-
+    <p>List Materi:</p>
+    {% for sub_course in sub_courses %}
+        <li>
+            <p>{{sub_course}}</p>
+        </li>
+    {% endfor %}
     <div id="on-form">
         <button onclick="myFunction()">Add New Request</button>
         <div id="myDIV">

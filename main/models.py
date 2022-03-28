@@ -1,4 +1,3 @@
-from typing import AbstractSet
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.base import Model
@@ -45,6 +44,26 @@ class Course(models.Model):
 
     def get_absolute_url(self):
         return '/'
+
+
+class SubSection(models.Model):
+    course_id = models.ForeignKey(Course,on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+
+
+class SubCourse(models.Model):
+    course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
+    subsection_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
+    title = models.CharField(max_length=200)
+    content1 = models.CharField(max_length=255)
+    content2 = models.CharField(max_length=255,null=True,blank=True)
+    def __str__(self):
+        return self.title
+
+class SubCourseFile(models.Model):
+    subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
+    file = models.FileField(upload_to="uploads_file/")
+
 
 class AttendanceReq(models.Model):
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE)

@@ -29,4 +29,8 @@ class MakeAbsent(forms.ModelForm):
         fields = ['status']
         widgets = {'status':forms.RadioSelect}
 
+class AddSubCourse(forms.ModelForm):
+    class Meta:
+        model = models.SubCourse
+        fields = '__all__'
 

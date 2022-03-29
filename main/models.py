@@ -49,6 +49,8 @@ class Course(models.Model):
 class SubSection(models.Model):
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
+    def __str__(self):
+        return f"{self.title}-{self.course_id.name}"
 
 
 class SubCourse(models.Model):
@@ -60,9 +62,9 @@ class SubCourse(models.Model):
     def __str__(self):
         return self.title
 
-class SubCourseFile(models.Model):
-    subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
-    file = models.FileField(upload_to="uploads_file/")
+# class SubCourseFile(models.Model):
+#     subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
+#     file = models.FileField(upload_to="uploads_file/")
 
 
 class AttendanceReq(models.Model):

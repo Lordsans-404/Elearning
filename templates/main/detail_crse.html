@@ -40,14 +40,16 @@
         </ul>
     {% endif %}
     <p>List Materi:</p>
-    {% for sub_course in sub_courses %}
-        <li>
-            <p>{{sub_course}}</p>
-        </li>
+    {% for key, values in section_course.items %}
+        <a href="">{{key}}</a><br>
+        {% for value in values %}
+            <p>{{value}}</p>
+        {% endfor %}
     {% endfor %}
+    <br><br><br>
     <div id="on-form">
         <button onclick="myFunction()">Add New Request</button>
-        <div id="myDIV">
+        <div id="myDIV" style="display: none;">
             <form method="post">
                 {% csrf_token %}
                 {{form1.media}}
@@ -80,5 +82,6 @@
         var x = document.getElementById("on-form");
         x.style.display = "none"
     }
+    
 </script>
 </html>

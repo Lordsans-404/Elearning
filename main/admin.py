@@ -29,5 +29,4 @@ admin.site.register(SubCourse)
 admin.site.register(Attendance)
 admin.site.register(AttendanceReq)
 admin.site.register(SubSection)
-admin.site.register(SubCourseFile)
 

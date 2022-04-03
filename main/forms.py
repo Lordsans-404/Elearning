@@ -32,5 +32,9 @@ class MakeAbsent(forms.ModelForm):
 class AddSubCourse(forms.ModelForm):
     class Meta:
         model = models.SubCourse
-        fields = '__all__'
+        exclude = ['course_id','subsection_id']
 
+class AddSection(forms.ModelForm):
+    class Meta:
+        model = models.SubSection
+        fields = ['title']        

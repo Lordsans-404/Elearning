@@ -40,15 +40,25 @@
         </ul>
     {% endif %}
     <p>List Materi:</p>
-    {% for key, values in section_course.items %}
-        <a href="">{{key}}</a><br>
-        {% for value in values %}
-            <p>{{value}}</p>
-        {% endfor %}
+    {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
+        <h2><a id="{{key}}" href="{% url 'section_edit' key.pk %}">{{key}}</a></h2>
+        <ul>
+            {% for value in values %}
+                <li>{{value}}</li>
+            {% endfor %}
+        </ul>
     {% endfor %}
     <br><br><br>
-    <div id="on-form">
-        <button onclick="myFunction()">Add New Request</button>
+    <div id="on-form" style="min-height: 100px;margin-bottom: 100px;">
+        <div class="add-section" style="margin-bottom: 20px;">
+            <h2>Add New Section</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{form2}}
+                <button type="submit">Add</button>         
+            </form>
+        </div><br>
+        <button onclick="myFunction()">Add New Attendance Req</button>
         <div id="myDIV" style="display: none;">
             <form method="post">
                 {% csrf_token %}

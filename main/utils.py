@@ -15,7 +15,12 @@ def Context_Std(user,**kwargs):
         object = kwargs['object']
         attendance_req = AttendanceReq.objects.filter(course_id=object)
         context['attendance_req_list'] = attendance_req
-        context['sub_courses'] = SubCourse.objects.filter(course_id=object)
+        section_list = SubSection.objects.filter(course_id=object)
+        section_course = {}
+        for section in section_list:
+            subcourse = SubCourse.objects.filter(subsection_id=section.pk)
+            section_course[section] = subcourse
+        context['section_course'] = section_course
     return context
 
 def Context_Tcr(user,**kwargs):
@@ -33,7 +38,6 @@ def Context_Tcr(user,**kwargs):
             subcourse = SubCourse.objects.filter(subsection_id=section.pk)
             section_course[section] = subcourse
         context['section_course'] = section_course
-        print(section_course)
     return context
 
 def check_expd_absent(object):

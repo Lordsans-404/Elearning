@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiyomasaa</title>
+</head>
+<body>
+    <button onclick="myFunction()">Edit Section</button>
+    <div id="myDIV" style="display: none;">
+        <form method="post">
+            {% csrf_token %}
+            {{form1.as_p}}
+            <button type="submit">Change</button>
+        </form>
+    </div>
+    <h3>Add New Sub Course In {{object.course_id.name}}</h3>
+    <div class="add-sub-course">
+        <form action="" method="post">
+            {%csrf_token%}
+            {{form2.as_p}}
+            <button type="submit">Create</button>
+        </form>
+    </div>
+</body>
+<script>
+    function myFunction() {
+        var x = document.getElementById("myDIV");
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } 
+        else {
+            x.style.display = "block";
+        }
+    }
+</script>
+</html>

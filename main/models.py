@@ -56,11 +56,11 @@ class SubSection(models.Model):
 class SubCourse(models.Model):
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
     subsection_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     content1 = models.CharField(max_length=255)
     content2 = models.CharField(max_length=255,null=True,blank=True)
     def __str__(self):
-        return self.title
+        return self.name
 
 # class SubCourseFile(models.Model):
 #     subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)

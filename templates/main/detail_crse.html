@@ -44,21 +44,22 @@
         <h2><a id="{{key}}" href="{% url 'section_edit' key.pk %}">{{key}}</a></h2>
         <ul>
             {% for value in values %}
-                <li>{{value}}</li>
+                <li><a href="{% url 'sub_course' course.id value.get_slug%}">{{value}}</a></li>
             {% endfor %}
         </ul>
     {% endfor %}
     <br><br><br>
     <div id="on-form" style="min-height: 100px;margin-bottom: 100px;">
-        <div class="add-section" style="margin-bottom: 20px;">
-            <h2>Add New Section</h2>
+        <button onclick="myFunction('myDIV2')">Add New Section</button>
+        <div id="myDIV2" class="add-section" style="margin: 10px 0; display: none;">
             <form method="post">
                 {% csrf_token %}
                 {{form2}}
                 <button type="submit">Add</button>         
             </form>
-        </div><br>
-        <button onclick="myFunction()">Add New Attendance Req</button>
+        </div>
+        <br><br>
+        <button onclick="myFunction('myDIV')">Add New Attendance Req</button>
         <div id="myDIV" style="display: none;">
             <form method="post">
                 {% csrf_token %}
@@ -78,8 +79,8 @@
     </div>
 </body>
 <script>
-    function myFunction() {
-        var x = document.getElementById("myDIV");
+    function myFunction(element) {
+        var x = document.getElementById(element);
         if (x.style.display === "block") {
             x.style.display = "none";
         } 

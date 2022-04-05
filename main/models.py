@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.base import Model
+from django.utils.text import slugify
 
 # User
 class CustomUser(AbstractUser):
@@ -59,8 +60,22 @@ class SubCourse(models.Model):
     name = models.CharField(max_length=200)
     content1 = models.CharField(max_length=255)
     content2 = models.CharField(max_length=255,null=True,blank=True)
+    slug = models.SlugField(null=True,blank=True)
     def __str__(self):
         return self.name
+
+    def save(self):
+        self.slug = slugify(self.name)
+        super(SubCourse,self).save()
+    
+    @property
+    def get_slug(self):
+        if self.slug == None:
+            self.slug = slugify(self.name)
+            super(SubCourse,self).save()
+        return self.slug
+
+
 
 # class SubCourseFile(models.Model):
 #     subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)

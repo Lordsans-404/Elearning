@@ -125,6 +125,12 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for de
         else:
             raise Http404
 
+class SubCourseView(LoginRequiredMixin,DetailView):
+    template_name = 'main/subcourse.html'
+    model = SubCourse
+     
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
 
 # ==========================================<<<<>>>>==================================================
 

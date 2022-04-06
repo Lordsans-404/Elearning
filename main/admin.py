@@ -25,8 +25,6 @@ admin.site.register(Student)
 admin.site.register(Teacher)
 admin.site.register(Classroom)
 admin.site.register(Course)
-admin.site.register(SubCourse)
 admin.site.register(Attendance)
 admin.site.register(AttendanceReq)
-admin.site.register(SubSection)
 

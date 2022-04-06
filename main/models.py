@@ -46,37 +46,6 @@ class Course(models.Model):
     def get_absolute_url(self):
         return '/'
 
-
-class SubSection(models.Model):
-    course_id = models.ForeignKey(Course,on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    def __str__(self):
-        return f"{self.title}-{self.course_id.name}"
-
-
-class SubCourse(models.Model):
-    course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
-    subsection_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
-    name = models.CharField(max_length=200)
-    content1 = models.CharField(max_length=255)
-    content2 = models.CharField(max_length=255,null=True,blank=True)
-    slug = models.SlugField(null=True,blank=True)
-    def __str__(self):
-        return self.name
-
-    def save(self):
-        self.slug = slugify(self.name)
-        super(SubCourse,self).save()
-    
-    @property
-    def get_slug(self):
-        if self.slug == None:
-            self.slug = slugify(self.name)
-            super(SubCourse,self).save()
-        return self.slug
-
-
-
 # class SubCourseFile(models.Model):
 #     subcourse_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
 #     file = models.FileField(upload_to="uploads_file/")

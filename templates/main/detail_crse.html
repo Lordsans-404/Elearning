@@ -33,7 +33,7 @@
                     {% if attendancereq.is_closed %}
                         <p>{{attendancereq}}</p>
                     {% else %}
-                        <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+                        <a href="{% url 'main:detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
                     {% endif %}
                 </li>
             {% endfor %}
@@ -41,15 +41,16 @@
     {% endif %}
     <p>List Materi:</p>
     {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
-        <h2><a id="{{key}}" href="{% url 'section_edit' key.pk %}">{{key}}</a></h2>
+        <h2 class="off-display"><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
+        <h2 class="on-display" style="display: none;"><a id="{{key}}" href="#{{key}}">{{key}}</a></h2>
         <ul>
             {% for value in values %}
-                <li><a href="{% url 'sub_course' course.id value.get_slug%}">{{value}}</a></li>
+                <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>
             {% endfor %}
         </ul>
     {% endfor %}
     <br><br><br>
-    <div id="on-form" style="min-height: 100px;margin-bottom: 100px;">
+    <div class="off-display" style="min-height: 100px;margin-bottom: 100px;">
         <button onclick="myFunction('myDIV2')">Add New Section</button>
         <div id="myDIV2" class="add-section" style="margin: 10px 0; display: none;">
             <form method="post">
@@ -90,8 +91,10 @@
     }
     var user_type = "{{user.user_type}}"
     if(user_type === "Std"){
-        var x = document.getElementById("on-form");
-        x.style.display = "none"
+        var x = document.querySelectorAll('.off-display')
+        x.forEach(p => p.style.display = "none")
+        var x = document.querySelectorAll('.on-display')
+        x.forEach(p => p.style.display = "block")
     }
     
 </script>

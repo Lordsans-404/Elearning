@@ -7,6 +7,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('main.urls')),
+    path('',include(('subcourse.urls','subcourse'),namespace='subcourse')),
     path('jsi18n', JavaScriptCatalog.as_view(), name='js-catlog'),
     path('user/',include('users.urls')),
 ]

@@ -4,6 +4,7 @@ from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
 from django.utils import timezone
+from subcourse import models
 
 def Context_Std(user,**kwargs):
     context = {}
@@ -15,10 +16,10 @@ def Context_Std(user,**kwargs):
         object = kwargs['object']
         attendance_req = AttendanceReq.objects.filter(course_id=object)
         context['attendance_req_list'] = attendance_req
-        section_list = SubSection.objects.filter(course_id=object)
+        section_list = models.SubSection.objects.filter(course_id=object)
         section_course = {}
         for section in section_list:
-            subcourse = SubCourse.objects.filter(subsection_id=section.pk)
+            subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
             section_course[section] = subcourse
         context['section_course'] = section_course
     return context
@@ -32,10 +33,10 @@ def Context_Tcr(user,**kwargs):
         object = kwargs['object']
         attendance_req = AttendanceReq.objects.filter(course_id=object)
         context['attendance_req_list'] = attendance_req
-        section_list = SubSection.objects.filter(course_id=object)
+        section_list = models.SubSection.objects.filter(course_id=object)
         section_course = {}
         for section in section_list:
-            subcourse = SubCourse.objects.filter(subsection_id=section.pk)
+            subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
             section_course[section] = subcourse
         context['section_course'] = section_course
     return context

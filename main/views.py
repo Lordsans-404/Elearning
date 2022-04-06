@@ -10,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseNotFound,Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import ModelFormMixin
-
+from subcourse import forms as subforms
+from subcourse import models as submodels
 
 # Create your views here.
 def Main(request):
@@ -44,7 +45,7 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
     template_name = 'main/detail_crse.html'
     model = Course
     form1 = forms.AddAttendanceReq
-    form2 = forms.AddSection
+    form2 = subforms.AddSection
 
     def post(self,request,**kwargs):
         if request.user.user_type == 'Tcr':
@@ -60,7 +61,7 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
                 att_req.save()
             if form2.is_valid():
                 title = form2.cleaned_data['title']
-                section = SubSection.objects.create(course_id=object,title=title)
+                section = submodels.SubSection.objects.create(course_id=object,title=title)
                 section.save()
             return redirect('courses_page',object.pk)
 
@@ -125,48 +126,7 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for de
         else:
             raise Http404
 
-class SubCourseView(LoginRequiredMixin,DetailView):
-    template_name = 'main/subcourse.html'
-    model = SubCourse
-     
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
-
 # ==========================================<<<<>>>>==================================================
-
-class SectionEdit(LoginRequiredMixin,View,SingleObjectMixin):
-    template_name = 'main/section_edit.html'
-    model = SubSection
-    form1 = forms.AddSection
-    form2 = forms.AddSubCourse
-    
-    def post(self,request,**kwargs):
-        obj = self.get_object()
-        if request.user.user_type == 'Tcr':
-            form1 = self.form1(request.POST,instance=obj)#needs instance for edit object
-            form2 = self.form2(request.POST)
-            if form1.is_valid():
-                form1.save()
-            if form2.is_valid():
-                crs_id      = obj.course_id
-                sect_id     = obj
-                name        = form2.cleaned_data['name']
-                content1    = form2.cleaned_data['content1']
-                content2    = form2.cleaned_data['content2']
-                sub_crs     = SubCourse.objects.create(course_id=crs_id,subsection_id=sect_id,
-                    name=name,content1=content1,content2=content2
-                )
-                sub_crs.save()
-            return redirect('courses_page', obj.course_id.pk)
-
-        else:
-            raise Http404
-        
-    def get(self,request,**kwargs):
-        self.object = self.get_object()
-        self.extra_context = {'form1':self.form1(instance=self.object),'form2':self.form2}
-        context = self.get_context_data()
-        return render(request,self.template_name,context)
 
 class AddCourse(LoginRequiredMixin,CreateView):
     model = Course

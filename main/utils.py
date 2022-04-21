@@ -1,4 +1,3 @@
-from tracemalloc import start
 from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
@@ -53,21 +52,22 @@ def check_expd_absent(object):
         noww = timezone.now()
         if request.is_closed == False: #if request is not closed
             if noww.date() == start_time.date(): #if noww(date) is same as start_time(date)
-                if noww.time() <= start_time.time(): #if noww(time) less than start_time(time)
+                if noww.time() < start_time.time(): #if noww(time) less than start_time(time)
                     request.is_closed = True # close the request
-                
 
             elif noww.date() == closed_time.date(): #(else) if, now same as closed_time(date)
                 if noww.time() >= closed_time.time(): #if now, is more than the closed_time
                     request.is_closed = True # close the request
             
-            else: # if the now(date) is not same as the start and closed time(date)
+            elif noww.date() > closed_time.date(): # (else) if, now is more than closed_time(date)
                 request.is_closed = True
         else: # if request is closed
             if noww.date() == start_time.date(): # if start_time same as now
-                if noww.time() > start_time.time(): # if now has passing the start_time 
+                if noww.time() >= start_time.time(): # if now has passing the start_time 
                     print('yeeey')
                     request.is_closed = False# open the request
+            elif noww.date() > start_time.date() and noww.date() < closed_time.date():
+                request.is_closed = False
 
         request.save()
 

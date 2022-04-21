@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,96 +7,123 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>halooo</title>
+    {% block link %}
     <script src="{% url 'js-catlog' %}"></script>
     <script src="{% static '/admin/js/core.js' %}"></script>
     <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
+    <style>
+        .dropdown-menu{
+            background-color: rgba(255, 255, 255, 0);     
+            background-clip: padding-box;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+    </style>
+    {% endblock link %}
 </head>
 <body>
-    <p>{{tcr_true}}</p>
-    <h2>Selamat Datang Di Mapel {{course}}</h2>
-    <br><br>
-    <p>List Absensi :</p>
-    {% if tcr_true %}
-        <ul>
-            {% for attendancereq in attendance_req_list %}
-                <li>
-                    <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
-                    <form action="{% url 'remove-attendance' attendancereq.id %}" method="post">{% csrf_token %}<input type="submit" value="Delete"></form>
-                
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <ul>
-            {% for attendancereq in attendance_req_list %}
-                <li>
-                    {% if attendancereq.is_closed %}
-                        <p>{{attendancereq}}</p>
-                    {% else %}
-                        <a href="{% url 'main:detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <p>List Materi:</p>
-    {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
-        <h2 class="off-display"><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
-        <h2 class="on-display" style="display: none;"><a id="{{key}}" href="#{{key}}">{{key}}</a></h2>
-        <ul>
-            {% for value in values %}
-                <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
-    <br><br><br>
-    <div class="off-display" style="min-height: 100px;margin-bottom: 100px;">
-        <button onclick="myFunction('myDIV2')">Add New Section</button>
-        <div id="myDIV2" class="add-section" style="margin: 10px 0; display: none;">
-            <form method="post">
-                {% csrf_token %}
-                {{form2}}
-                <button type="submit">Add</button>         
-            </form>
-        </div>
+    {% block content %}
+        <p>{{tcr_true}}</p>
+        <h2>Selamat Datang Di Mapel {{course}}</h2>
         <br><br>
-        <button onclick="myFunction('myDIV')">Add New Attendance Req</button>
-        <div id="myDIV" style="display: none;">
-            <form method="post">
-                {% csrf_token %}
-                {{form1.media}}
-                {{form1.start_time.label}}
-                {{form1.start_time}}
-                <br>
-                {{form1.closed_time.label}}
-                {{form1.closed_time}}
-                <br>
-                {{form1.is_closed.label}}
-                {{form1.is_closed}}
-                <br>
-                <button type="submit">Add</button>         
-            </form>
+        <p>List Absensi :</p>
+        {% if tcr_true %}
+            <ul>
+                {% for attendancereq in attendance_req_list %}
+                    <li>
+                        <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+                        <form action="{% url 'remove-attendance' attendancereq.id %}" method="post">{% csrf_token %}<input type="submit" value="Delete"></form>
+                    
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <ul>
+                {% for attendancereq in attendance_req_list %}
+                    <li>
+                        {% if attendancereq.is_closed %}
+                            <p>{{attendancereq}}</p>
+                        {% else %}
+                            <a href="{% url 'main:detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <p>List Materi:</p>
+        {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
+            <div class="key-head d-flex justify-content-between px-2">
+                <h2 class="tcr-display"><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
+                <div class="btn-group dropstart">
+                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Create Activity
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Assignment</a>
+                        <a class="dropdown-item" href="#">Material</a>
+                        <a class="dropdown-item" href="#">Sub Course</a>
+                        <a class="dropdown-item" href="#">Announcements</a>  
+                    </div>
+                </div>
+                <!-- <a class="" id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a> -->
+                <h2 class="std-display" style="display: none;"><a id="{{key}}" href="#{{key}}">{{key}}</a></h2>
+            </div>
+            <ul>
+                {% for value in values %}
+                    <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <br><br><br>
+        <div class="tcr-display" style="min-height: 100px;margin-bottom: 100px;">
+            <button onclick="myFunction('myDIV2')">Add New Section</button>
+            <div id="myDIV2" class="add-section" style="margin: 10px 0; display: none;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{form2}}
+                    <button type="submit">Add</button>         
+                </form>
+            </div>
+            <br><br>
+            <button onclick="myFunction('myDIV')">Add New Attendance Req</button>
+            <div id="myDIV" style="display: none;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{form1.media}}
+                    {{form1.start_time.label}}
+                    {{form1.start_time}}
+                    <br>
+                    {{form1.closed_time.label}}
+                    {{form1.closed_time}}
+                    <br>
+                    {{form1.is_closed.label}}
+                    {{form1.is_closed}}
+                    <br>
+                    <button type="submit">Add</button>         
+                </form>
+            </div>
         </div>
-    </div>
+    {% endblock content %}
 </body>
-<script>
-    function myFunction(element) {
-        var x = document.getElementById(element);
-        if (x.style.display === "block") {
-            x.style.display = "none";
-        } 
-        else {
-            x.style.display = "block";
+{% block script %}
+    <script>
+        function myFunction(element) {
+            var x = document.getElementById(element);
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } 
+            else {
+                x.style.display = "block";
+            }
         }
-    }
-    var user_type = "{{user.user_type}}"
-    if(user_type === "Std"){
-        var x = document.querySelectorAll('.off-display')
-        x.forEach(p => p.style.display = "none")
-        var x = document.querySelectorAll('.on-display')
-        x.forEach(p => p.style.display = "block")
-    }
-    
-</script>
+        var user_type = "{{user.user_type}}"
+        if(user_type === "Std"){
+            var x = document.querySelectorAll('.tcr-display')
+            x.forEach(p => p.style.display = "none")
+            var x = document.querySelectorAll('.std-display')
+            x.forEach(p => p.style.display = "block")
+        }
+        
+    </script>
+{% endblock script %}
 </html>

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.base import Model
 from django.utils.text import slugify
+from django.utils import timezone
 
 # User
 class CustomUser(AbstractUser):
@@ -60,7 +61,16 @@ class AttendanceReq(models.Model):
 
     @property
     def check_time(self):
-        return self.start_time.times
+        start = self.start_time
+        closed = self.closed_time
+        is_closed = self.is_closed
+        noww = timezone.now()
+        if is_closed:
+            if noww.date() == start.date():
+                if noww.time() >= start.time():
+                    self.is_closed = True
+
+
 
     def __str__(self):
         return f'{self.course_id} Tanggal {self.date_time.date()} Closed = {self.is_closed}'

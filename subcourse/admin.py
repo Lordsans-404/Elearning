@@ -4,3 +4,6 @@ from .models import *
 
 admin.site.register(SubCourse)
 admin.site.register(SubSection)
+admin.site.register(Assignment)
+admin.site.register(StdAssignment)
+admin.site.register(UploadFile)

@@ -1,13 +1,13 @@
 from django.shortcuts import redirect, render
 from .models import *
-from django.core.paginator import Paginator
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from . import forms
 from django.urls import reverse,reverse_lazy
 from django.views.generic import *
 from . import utils
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseNotFound,Http404
+from django.http import HttpResponse, HttpResponseNotFound,Http404,JsonResponse
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import ModelFormMixin
 from subcourse import forms as subforms
@@ -49,21 +49,32 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
 
     def post(self,request,**kwargs):
         if request.user.user_type == 'Tcr':
-            object = self.get_object()
-            form = self.form1(request.POST)
-            form2 = self.form2(request.POST)
-            if form.is_valid():
-                print('hey')
-                start = form.cleaned_data['start_time']
-                closed = form.cleaned_data['closed_time']
-                is_closed = form.cleaned_data['is_closed']
-                att_req = AttendanceReq.objects.create(course_id=object,start_time=start,closed_time=closed,is_closed=is_closed)
-                att_req.save()
-            if form2.is_valid():
-                title = form2.cleaned_data['title']
-                section = submodels.SubSection.objects.create(course_id=object,title=title)
-                section.save()
-            return redirect('courses_page',object.pk)
+            post = request.POST
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                obj = submodels.SubSection.objects.get(pk=post['pk'])
+                print(post)
+                form = self.form2(post,instance=obj)
+                if form.is_valid():
+                    instance = form.save()
+                    ser_instance = serializers.serialize('json', [ instance, ])
+                    return JsonResponse({"instance": ser_instance}, status=200)
+                return JsonResponse({"error": "COK"}, status=400)
+            else:
+                object = self.get_object()
+                form = self.form1(post)
+                form2 = self.form2(post)
+                if form.is_valid():
+                    print('hey')
+                    start = form.cleaned_data['start_time']
+                    closed = form.cleaned_data['closed_time']
+                    is_closed = form.cleaned_data['is_closed']
+                    att_req = AttendanceReq.objects.create(course_id=object,start_time=start,closed_time=closed,is_closed=is_closed)
+                    att_req.save()
+                if form2.is_valid():
+                    title = form2.cleaned_data['title']
+                    section = submodels.SubSection.objects.create(course_id=object,title=title)
+                    section.save()
+                return redirect('courses_page',object.pk)
 
     def get(self,request,**kwargs):
         context = {}
@@ -73,7 +84,7 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
         returnee = {'object':object,}
         utils.check_expd_absent(object)
         if user.is_authenticated:
-
+            
             if user.user_type == 'Std':
                 context.update(utils.Context_Std(user,**returnee))
                 if object.class_id == context['classroom']:

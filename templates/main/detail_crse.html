@@ -13,6 +13,13 @@
     <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
     <style>
+        .std-display{
+            display: none;
+        }
+        .tcr-display{
+            display: none;
+        }
+
         .dropdown-menu{
             background-color: rgba(255, 255, 255, 0);     
             background-clip: padding-box;
@@ -33,7 +40,6 @@
                     <li>
                         <a href="{% url 'detail_attend' course.id attendancereq.id %}">{{attendancereq}}</a>
                         <form action="{% url 'remove-attendance' attendancereq.id %}" method="post">{% csrf_token %}<input type="submit" value="Delete"></form>
-                    
                     </li>
                 {% endfor %}
             </ul>
@@ -51,9 +57,37 @@
             </ul>
         {% endif %}
         <p>List Materi:</p>
+        <div class="section-course">
         {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
-            <div class="key-head d-flex justify-content-between px-2">
-                <h2 class="tcr-display"><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
+            <div class="key-head d-flex justify-content-between px-2" >
+                <div class="title-key d-flex flex-row" id="title-head">
+                    <h2><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
+                    <!-- Button modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal{{key.pk}}">
+                        Edit Title
+                    </button>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="modal{{key.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title bold text-dark" >Edit title</h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <form onsubmit="postPrevDefault('{{key.pk}}',event)" class="title-form" id="title-form-{{key.pk}}">
+                                {% csrf_token %}
+                                <input type="hidden" name="pk" value="{{key.pk}}">
+                                <label for="title" class="text-dark">Title : </label>
+                                {{form2.title}}
+                                <a onclick="postPrevDefault('{{key.pk}}',event)" class="btn btn-success">Submit</a>
+                            </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="btn-group dropstart">
                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     Create Activity
@@ -65,8 +99,6 @@
                         <a class="dropdown-item" href="#">Announcements</a>  
                     </div>
                 </div>
-                <!-- <a class="" id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a> -->
-                <h2 class="std-display" style="display: none;"><a id="{{key}}" href="#{{key}}">{{key}}</a></h2>
             </div>
             <ul>
                 {% for value in values %}
@@ -74,10 +106,11 @@
                 {% endfor %}
             </ul>
         {% endfor %}
+        </div>
         <br><br><br>
         <div class="tcr-display" style="min-height: 100px;margin-bottom: 100px;">
-            <button onclick="myFunction('myDIV2')">Add New Section</button>
-            <div id="myDIV2" class="add-section" style="margin: 10px 0; display: none;">
+            <button id="btn1" class="btn btn-primary">Add New Section</button>
+            <div id="myDIV1" class="add-section" style="margin: 10px 0; display: none;">
                 <form method="post">
                     {% csrf_token %}
                     {{form2}}
@@ -85,8 +118,8 @@
                 </form>
             </div>
             <br><br>
-            <button onclick="myFunction('myDIV')">Add New Attendance Req</button>
-            <div id="myDIV" style="display: none;">
+            <button id="btn2" class="btn btn-primary">Add New Attendance Req</button>
+            <div id="myDIV2" style="display: none;">
                 <form method="post">
                     {% csrf_token %}
                     {{form1.media}}
@@ -106,24 +139,75 @@
     {% endblock content %}
 </body>
 {% block script %}
-    <script>
-        function myFunction(element) {
-            var x = document.getElementById(element);
-            if (x.style.display === "block") {
-                x.style.display = "none";
-            } 
-            else {
-                x.style.display = "block";
-            }
-        }
+    <script type="text/javascript">
+
         var user_type = "{{user.user_type}}"
         if(user_type === "Std"){
-            var x = document.querySelectorAll('.tcr-display')
-            x.forEach(p => p.style.display = "none")
             var x = document.querySelectorAll('.std-display')
             x.forEach(p => p.style.display = "block")
         }
+        else{
+            var x = document.querySelectorAll('.tcr-display')
+            x.forEach(p => p.style.display = "block")
+        }
         
+        $(document).ready(function(){
+            $("#btn1").click(function(){
+                $("#myDIV1").toggle(100);
+            });
+            $("#btn2").click(function(){
+                $("#myDIV2").toggle(100);
+            });
+            // $(".title-form").submit(function(e){
+            //     e.preventDefault();
+            //     const var_id =  "#" + $(this).attr('id')
+            //     console.log(var_id)
+            //     var serializedata = $(var_id).serialize()
+            //     $.ajax({
+            //         type: 'POST',
+            //         url: "{% url 'courses_page' course.pk %}",
+            //         data: serializedata,
+            //         success: function (response){
+            //             // close the form
+            //             $(".btn-close").trigger('click');
+                        
+            //             $(".section-course").load(" .section-course");
+
+            //             $('.title-form').trigger('reset');
+            //             console.log('halooo')
+            //         },
+            //         error: function (response) {
+            //             console.log('Jncuk')
+            //         }
+            //     })
+            // });
+        });
+
+        // every tim form is submitted or button get clicked call this function
+        function postPrevDefault(id,e){
+            e.preventDefault();
+            var id_form = '#title-form-'+id
+            console.log(id_form)
+            var serializedata = $(id_form).serialize()
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'courses_page' course.pk %}",
+                data: serializedata,
+                success: function (response){
+                    // close the form
+                    $(".btn-close").trigger('click');
+                    
+                    $(".section-course").load(" .section-course");
+
+                    $('.title-form').trigger('reset');
+                    console.log('halooo')
+                },
+                error: function (response) {
+                    console.log('Jncuk')
+                }
+            })
+        }
+
     </script>
 {% endblock script %}
 </html>

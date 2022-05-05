@@ -6,7 +6,7 @@ class SubSection(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     def __str__(self):
-        return f"{self.title}-{self.course_id.name}"
+        return f"{self.pk}.{self.title}-{self.course_id.name}"
 
 class SubCourse(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE,null=True)

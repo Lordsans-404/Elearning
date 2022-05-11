@@ -51,14 +51,7 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
         if request.user.user_type == 'Tcr':
             post = request.POST
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                obj = submodels.SubSection.objects.get(pk=post['pk'])
-                print(post)
-                form = self.form2(post,instance=obj)
-                if form.is_valid():
-                    instance = form.save()
-                    ser_instance = serializers.serialize('json', [ instance, ])
-                    return JsonResponse({"instance": ser_instance}, status=200)
-                return JsonResponse({"error": "COK"}, status=400)
+                return utils.ajaxPost(post,**{"kwargs":kwargs,"form2":self.form2})
             else:
                 object = self.get_object()
                 form = self.form1(post)
@@ -84,7 +77,6 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
         returnee = {'object':object,}
         utils.check_expd_absent(object)
         if user.is_authenticated:
-            
             if user.user_type == 'Std':
                 context.update(utils.Context_Std(user,**returnee))
                 if object.class_id == context['classroom']:
@@ -137,6 +129,9 @@ class DetailAttend(LoginRequiredMixin,SingleObjectMixin,View):# this view for de
         else:
             raise Http404
 
+
+        
+        
 # ==========================================<<<<>>>>==================================================
 
 class AddCourse(LoginRequiredMixin,CreateView):

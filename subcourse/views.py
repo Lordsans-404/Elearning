@@ -16,11 +16,6 @@ from . import models,forms
 class SubCourseView(LoginRequiredMixin,DetailView):
     template_name = 'subcourse/subcourse.html'
     model = models.SubCourse
-     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        print(context)
-        return context
 
 class SectionEdit(LoginRequiredMixin,View,SingleObjectMixin):
     template_name = 'subcourse/section_edit.html'
@@ -33,6 +28,7 @@ class SectionEdit(LoginRequiredMixin,View,SingleObjectMixin):
         if request.user.user_type == 'Tcr':
             form1 = self.form1(request.POST,instance=obj)#needs instance for edit object
             form2 = self.form2(request.POST)
+            print('hmmm')
             if form1.is_valid():
                 form1.save()
             if form2.is_valid():
@@ -44,6 +40,7 @@ class SectionEdit(LoginRequiredMixin,View,SingleObjectMixin):
                 sub_crs     = models.SubCourse.objects.create(course_id=crs_id,subsection_id=sect_id,
                     name=name,content1=content1,content2=content2
                 )
+                print(sub_crs)
                 sub_crs.save()
             return redirect('courses_page', obj.course_id.pk)
 
@@ -58,3 +55,8 @@ class SectionEdit(LoginRequiredMixin,View,SingleObjectMixin):
             return render(request,self.template_name,context)
         else:# if user is a student
             raise Http404
+
+
+class DetailAssignment(LoginRequiredMixin,DetailView):
+    model = models.Assignment
+    template_name = 'subcourse/subcourse.html'

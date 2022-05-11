@@ -22,6 +22,7 @@ class SubCourse(models.Model):
     def get_slug(self):
         if self.slug == None:
             self.slug = main.slugify(self.name)
+            self.slug += f"-{self.pk}"
             super(SubCourse,self).save()
         return self.slug
 
@@ -36,7 +37,7 @@ class SubCourse(models.Model):
 
 class Assignment(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE,null=True)
-    sub_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
+    sub_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=255)
     start_time = models.DateTimeField()
@@ -45,13 +46,14 @@ class Assignment(models.Model):
     slug = models.SlugField(null=True,blank=True)
     
     def __str__(self):
-        return f"{self.sub_id}{self.title}"
+        return f"{self.title}"
     
     @property
     def get_slug(self):
         if self.slug == None:
-            self.slug = main.slugify(self.name)
-            super(SubCourse,self).save()
+            self.slug = main.slugify(self.title)
+            self.slug += f"-{self.pk}"
+            super(Assignment,self).save()
         return self.slug
 
 class StdAssignment(models.Model):
@@ -66,7 +68,7 @@ class StdAssignment(models.Model):
 
 class UploadFile(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE,null=True)
-    sub_id = models.ForeignKey(SubCourse,on_delete=models.CASCADE,null=True)
+    sub_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=255,null=True,blank=True)
     file = models.FileField(upload_to="uploads_file/")

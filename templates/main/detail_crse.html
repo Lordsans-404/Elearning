@@ -12,20 +12,6 @@
     <script src="{% static '/admin/js/core.js' %}"></script>
     <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
-    <style>
-        .std-display{
-            display: none;
-        }
-        .tcr-display{
-            display: none;
-        }
-
-        .dropdown-menu{
-            background-color: rgba(255, 255, 255, 0);     
-            background-clip: padding-box;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-    </style>
     {% endblock link %}
 </head>
 <body>
@@ -59,20 +45,20 @@
         <p>List Materi:</p>
         <div class="section-course">
         {% for key, values in section_course.items %} <!-- inside section_course is a dictionary -->
-            <div class="key-head d-flex justify-content-between px-2" >
+            <div class="title-course d-flex justify-content-between px-2" >
                 <div class="title-key d-flex flex-row" id="title-head">
                     <h2><a id="{{key}}" href="{% url 'subcourse:section_edit' key.pk %}">{{key}}</a></h2>
                     <!-- Button modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal{{key.pk}}">
+                    <button type="button" class="btn btn-primary tcr-display" data-bs-toggle="modal" data-bs-target="#modal{{key.pk}}">
                         Edit Title
                     </button>
                     
-                    <!-- Modal -->
+                    <!-- Modal Title -->
                     <div class="modal fade" id="modal{{key.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h3 class="modal-title bold text-dark" >Edit title</h3>
+                                <h3 class="modal-title bold" >Edit title</h3>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -81,28 +67,52 @@
                                 <input type="hidden" name="pk" value="{{key.pk}}">
                                 <label for="title" class="text-dark">Title : </label>
                                 {{form2.title}}
-                                <a onclick="postPrevDefault('{{key.pk}}',event)" class="btn btn-success">Submit</a>
+                                <a onclick="postPrevDefault('{{key.pk}}',event)" class="btn btn-primary">Submit</a>
                             </form>
                             </div>
                         </div>
                         </div>
                     </div>
                 </div>
-                <div class="btn-group dropstart">
+                <div class="btn-group dropstart tcr-display">
                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Create Activity
+                        Create Activity
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Assignment</a>
-                        <a class="dropdown-item" href="#">Material</a>
-                        <a class="dropdown-item" href="#">Sub Course</a>
-                        <a class="dropdown-item" href="#">Announcements</a>  
+                        <a class="dropdown-item assignment" onclick="testFunction(key.pk,'asgt',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Assignment</a>
+                        <a class="dropdown-item material" onclick="testFunction(key.pk,'mtrl',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Material</a>
+                        <a class="dropdown-item sub-course" onclick="testFunction(key.pk,'sbcs',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Sub Course</a>
+                        <a class="dropdown-item announcements" onclick="testFunction(key.pk,'anct',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Announcements</a>  
                     </div>
+                </div>
+            </div>
+            <!-- Modal Activity -->
+            <div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="activityModalLabel">Add New Activity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-dark">
+                        <p>Haloo</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
                 </div>
             </div>
             <ul>
                 {% for value in values %}
-                    <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>
+                    {% for val in value %}
+                        {% if val.name %}
+                        <li><a href="{% url 'subcourse:sub_course' course.id val.get_slug%}">{{val}}</a></li>
+
+                        {% else %}
+                        {{val}}
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </ul>
         {% endfor %}
@@ -143,12 +153,8 @@
 
         var user_type = "{{user.user_type}}"
         if(user_type === "Std"){
-            var x = document.querySelectorAll('.std-display')
-            x.forEach(p => p.style.display = "block")
-        }
-        else{
             var x = document.querySelectorAll('.tcr-display')
-            x.forEach(p => p.style.display = "block")
+            x.forEach(p => p.style.display = "none")
         }
         
         $(document).ready(function(){
@@ -158,36 +164,12 @@
             $("#btn2").click(function(){
                 $("#myDIV2").toggle(100);
             });
-            // $(".title-form").submit(function(e){
-            //     e.preventDefault();
-            //     const var_id =  "#" + $(this).attr('id')
-            //     console.log(var_id)
-            //     var serializedata = $(var_id).serialize()
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: "{% url 'courses_page' course.pk %}",
-            //         data: serializedata,
-            //         success: function (response){
-            //             // close the form
-            //             $(".btn-close").trigger('click');
-                        
-            //             $(".section-course").load(" .section-course");
-
-            //             $('.title-form').trigger('reset');
-            //             console.log('halooo')
-            //         },
-            //         error: function (response) {
-            //             console.log('Jncuk')
-            //         }
-            //     })
-            // });
         });
 
-        // every tim form is submitted or button get clicked call this function
+        // every time form is submitted or button get clicked call this function
         function postPrevDefault(id,e){
             e.preventDefault();
             var id_form = '#title-form-'+id
-            console.log(id_form)
             var serializedata = $(id_form).serialize()
             $.ajax({
                 type: 'POST',
@@ -200,12 +182,15 @@
                     $(".section-course").load(" .section-course");
 
                     $('.title-form').trigger('reset');
-                    console.log('halooo')
                 },
                 error: function (response) {
                     console.log('Jncuk')
                 }
             })
+        }
+
+        function testFunction(id,type,e){
+            
         }
 
     </script>

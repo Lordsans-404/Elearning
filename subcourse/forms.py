@@ -13,3 +13,11 @@ class AddSection(forms.ModelForm):
     class Meta:
         model = models.SubSection
         fields = ['title']        
+
+class FormAssignmentTcr(forms.ModelForm):
+    start_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
+    closed_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
+    class Meta:
+        model = models.Assignment
+        exclude = ["slug"]
+

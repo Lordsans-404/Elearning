@@ -3,7 +3,10 @@ from .models import *
 from django.http import HttpResponseNotFound,Http404
 from django.shortcuts import render
 from django.utils import timezone
+from django.http import HttpResponse, HttpResponseNotFound,Http404,JsonResponse
+from django.core import serializers
 from subcourse import models
+
 
 def Context_Std(user,**kwargs):
     context = {}
@@ -36,9 +39,20 @@ def Context_Tcr(user,**kwargs):
         section_course = {}
         for section in section_list:
             subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
-            section_course[section] = subcourse
+            assignment = models.Assignment.objects.filter(sub_id=section.pk)
+            section_course[section] = [subcourse,assignment]
         context['section_course'] = section_course
     return context
+
+        # for section in section_list:
+        #     subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
+        #     assignment = models.Assignment.objects.filter(sub_id=section.pk)
+        #     marbles = []
+        #     for x,y in zip(subcourse,assignment):
+        #         marbles.append(x)
+        #         marbles.append(y)
+        #     section_course[section] = marbles
+        # print(section_course)
 
 def check_expd_absent(object):
     if object == "all":
@@ -75,6 +89,16 @@ def make_attendance(student,attreq_id,status):
     att_create = Attendance.objects.create(student=student,attendanceReq_id=attreq_id,status=status)
     att_create.save()
 
+def ajaxPost(post,**kwargs):# for DetailCourse
+    obj = models.SubSection.objects.get(pk=post['pk'])
+    form = kwargs['form2'](post,instance=obj)
+    if form.is_valid():
+        instance = form.save()
+        ser_instance = serializers.serialize('json', [ instance, ])
+        return JsonResponse({"instance": ser_instance}, status=200)
+    return JsonResponse({"error": "COK"}, status=400)
+
+
 def check_no_double_attend(object,request):
     student = Student.objects.get(user=request.user)
     attendance = Attendance.objects
@@ -102,7 +126,5 @@ def check_no_double_attend(object,request):
             for attend in list_attend[:leng_list]:
                 print(attend)
                 attend.delete()
-                
-            
     return context
     

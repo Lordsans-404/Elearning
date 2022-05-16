@@ -1,3 +1,5 @@
+import imp
+import itertools
 from main import forms
 from .models import *
 from django.http import HttpResponseNotFound,Http404
@@ -6,7 +8,8 @@ from django.utils import timezone
 from django.http import HttpResponse, HttpResponseNotFound,Http404,JsonResponse
 from django.core import serializers
 from subcourse import models
-
+from itertools import chain
+from operator import attrgetter
 
 def Context_Std(user,**kwargs):
     context = {}
@@ -40,7 +43,9 @@ def Context_Tcr(user,**kwargs):
         for section in section_list:
             subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
             assignment = models.Assignment.objects.filter(sub_id=section.pk)
-            section_course[section] = [subcourse,assignment]
+            section_course[section] = sorted(itertools.chain(subcourse,assignment),key=attrgetter('date_time'))
+            # sorted subcourse and assignment by date_time
+
         context['section_course'] = section_course
     return context
 
@@ -91,7 +96,7 @@ def make_attendance(student,attreq_id,status):
 
 def ajaxPost(post,**kwargs):# for DetailCourse
     obj = models.SubSection.objects.get(pk=post['pk'])
-    form = kwargs['form2'](post,instance=obj)
+    form = kwargs['form'](post,instance=obj)
     if form.is_valid():
         instance = form.save()
         ser_instance = serializers.serialize('json', [ instance, ])

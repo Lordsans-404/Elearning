@@ -46,12 +46,23 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
     model = Course
     form1 = forms.AddAttendanceReq
     form2 = subforms.AddSection
+    form3 = subforms.AddSubCourse
+    form4 = subforms.FormAssignmentTcr
 
     def post(self,request,**kwargs):
         if request.user.user_type == 'Tcr':
             post = request.POST
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return utils.ajaxPost(post,**{"kwargs":kwargs,"form2":self.form2})
+                print(post)
+                if post['form-type'] == "2":
+                    return utils.ajaxPost(post,**{"kwargs":kwargs,"form":self.form2})
+                elif post['form-type'] == "3":
+                    return utils.ajaxPost(post,**{"kwargs":kwargs,"form":self.form3})
+                elif post['form-type'] == "4":
+                    return utils.ajaxPost(post,**{"kwargs":kwargs,"form":self.form4})
+                else:
+                    print('lah??')
+
             else:
                 object = self.get_object()
                 form = self.form1(post)
@@ -87,6 +98,8 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
             elif user.user_type == 'Tcr' :
                 context['form1'] = self.form1
                 context['form2'] = self.form2
+                context['form3'] = self.form3
+                context['form4'] = self.form4
                 context.update(utils.Context_Tcr(user,**returnee))
                 context['tcr_true'] = True
                 if object.teacher_id == context['teacher']:

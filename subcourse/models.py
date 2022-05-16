@@ -1,5 +1,7 @@
 from django.db import models
 from main import models as main
+from django.utils import timezone
+import datetime
 # Create your models here.
 
 class SubSection(models.Model):
@@ -12,6 +14,7 @@ class SubCourse(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE,null=True)
     subsection_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=200)
+    date_time = models.DateTimeField(auto_now_add=True, null=True)
     content1 = models.CharField(max_length=255)
     content2 = models.CharField(max_length=255,null=True,blank=True)
     slug = models.SlugField(null=True,blank=True)
@@ -40,6 +43,7 @@ class Assignment(models.Model):
     sub_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=255)
+    date_time = models.DateTimeField(auto_now_add=True, null=True)
     start_time = models.DateTimeField()
     closed_time = models.DateTimeField()
     is_closed = models.BooleanField(default=False)

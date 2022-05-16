@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>halooo</title>
+    {% block title %}
+        Haloo
+    {% endblock title %}
     {% block link %}
     <script src="{% url 'js-catlog' %}"></script>
     <script src="{% static '/admin/js/core.js' %}"></script>
@@ -65,6 +67,7 @@
                             <form onsubmit="postPrevDefault('{{key.pk}}',event)" class="title-form" id="title-form-{{key.pk}}">
                                 {% csrf_token %}
                                 <input type="hidden" name="pk" value="{{key.pk}}">
+                                <input type="hidden" name="form-type" value="2">
                                 <label for="title" class="text-dark">Title : </label>
                                 {{form2.title}}
                                 <a onclick="postPrevDefault('{{key.pk}}',event)" class="btn btn-primary">Submit</a>
@@ -79,10 +82,10 @@
                         Create Activity
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item assignment" onclick="testFunction(key.pk,'asgt',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Assignment</a>
-                        <a class="dropdown-item material" onclick="testFunction(key.pk,'mtrl',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Material</a>
-                        <a class="dropdown-item sub-course" onclick="testFunction(key.pk,'sbcs',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Sub Course</a>
-                        <a class="dropdown-item announcements" onclick="testFunction(key.pk,'anct',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Announcements</a>  
+                        <a class="dropdown-item assignment" onclick="testFunction('{{key.pk}}','asgt',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Assignment</a>
+                        <a class="dropdown-item material" onclick="testFunction('{{key.pk}}','mtrl',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Material</a>
+                        <a class="dropdown-item sub-course" onclick="testFunction('{{key.pk}}','sbcs',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Sub Course</a>
+                        <a class="dropdown-item announcements" onclick="testFunction('{{key.pk}}','anct',event)" data-bs-toggle="modal" data-bs-target="#activityModal">Announcements</a>  
                     </div>
                 </div>
             </div>
@@ -105,14 +108,11 @@
             </div>
             <ul>
                 {% for value in values %}
-                    {% for val in value %}
-                        {% if val.name %}
-                        <li><a href="{% url 'subcourse:sub_course' course.id val.get_slug%}">{{val}}</a></li>
-
-                        {% else %}
-                        {{val}}
-                        {% endif %}
-                    {% endfor %}
+                    {% if val.name %}
+                        <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>   
+                    {% else %}
+                        <li><a href="{% url 'subcourse:assignment' course.id value.get_slug%}">{{value}}</a></li>   
+                    {% endif %}
                 {% endfor %}
             </ul>
         {% endfor %}
@@ -190,7 +190,7 @@
         }
 
         function testFunction(id,type,e){
-            
+            console.log(id,type,e)
         }
 
     </script>

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from . import models
-from django.contrib.admin.widgets import AdminSplitDateTime,AdminTimeWidget
+from django.contrib.admin.widgets import AdminSplitDateTime
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -15,8 +15,8 @@ class AddNewCourse(forms.ModelForm):
         fields = ['name','teacher_id','class_id']
 
 class AddAttendanceReq(forms.ModelForm):
-    start_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
-    closed_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
+    start_time = forms.SplitDateTimeField(widget=forms.DateTimeInput(attrs={'class':'date-time'}))
+    closed_time = forms.SplitDateTimeField(widget=forms.DateTimeInput(attrs={'class':'date-time'}))
     class Meta:
         model = models.AttendanceReq
         fields = ['is_closed']

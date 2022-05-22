@@ -43,6 +43,7 @@ class Assignment(models.Model):
     sub_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=255)
+    file = models.FileField(upload_to="uploads_file_tcr/",null=True,blank=True)
     date_time = models.DateTimeField(auto_now_add=True, null=True)
     start_time = models.DateTimeField()
     closed_time = models.DateTimeField()

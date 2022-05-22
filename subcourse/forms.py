@@ -15,9 +15,9 @@ class AddSection(forms.ModelForm):
         fields = ['title']        
 
 class FormAssignmentTcr(forms.ModelForm):
-    start_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
-    closed_time = forms.SplitDateTimeField(widget=AdminSplitDateTime())
+    start_time = forms.SplitDateTimeField(widget=forms.DateTimeInput(attrs={'class':'date-time'}))
+    closed_time = forms.SplitDateTimeField(widget=forms.DateTimeInput(attrs={'class':'date-time'}))
     class Meta:
         model = models.Assignment
-        exclude = ["slug"]
+        exclude = ["slug",'course_id','sub_id']
 

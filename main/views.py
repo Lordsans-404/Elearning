@@ -55,7 +55,7 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 print(post)
                 if post['form-type'] == "2":
-                    return utils.ajaxPost(post,**{"kwargs":kwargs,"form":self.form2})
+                    return utils.editSubsection(post,**{"kwargs":kwargs,"form":self.form2})
                 elif post['form-type'] == "3":
                     return utils.ajaxPost(post,**{"kwargs":kwargs,"form":self.form3})
                 elif post['form-type'] == "4":

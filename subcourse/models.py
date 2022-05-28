@@ -12,7 +12,7 @@ class SubSection(models.Model):
 
 class SubCourse(models.Model):
     course_id = models.ForeignKey(main.Course,on_delete=models.CASCADE,null=True)
-    subsection_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
+    sub_id = models.ForeignKey(SubSection,on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=200)
     date_time = models.DateTimeField(auto_now_add=True, null=True)
     content1 = models.CharField(max_length=255)

@@ -24,9 +24,10 @@ def Context_Std(user,**kwargs):
         section_list = models.SubSection.objects.filter(course_id=object)
         section_course = {}
         for section in section_list:
-            subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
+            subcourse = models.SubCourse.objects.filter(sub_id=section.pk)
             section_course[section] = subcourse
         context['section_course'] = section_course
+        
     return context
 
 def Context_Tcr(user,**kwargs):
@@ -41,7 +42,7 @@ def Context_Tcr(user,**kwargs):
         section_list = models.SubSection.objects.filter(course_id=object)
         section_course = {}
         for section in section_list:
-            subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
+            subcourse = models.SubCourse.objects.filter(sub_id=section.pk)
             assignment = models.Assignment.objects.filter(sub_id=section.pk)
             section_course[section] = sorted(itertools.chain(subcourse,assignment),key=attrgetter('date_time'))
             # sorted subcourse and assignment by date_time
@@ -50,7 +51,7 @@ def Context_Tcr(user,**kwargs):
     return context
 
         # for section in section_list:
-        #     subcourse = models.SubCourse.objects.filter(subsection_id=section.pk)
+        #     subcourse = models.SubCourse.objects.filter(sub_id=section.pk)
         #     assignment = models.Assignment.objects.filter(sub_id=section.pk)
         #     marbles = []
         #     for x,y in zip(subcourse,assignment):
@@ -94,7 +95,7 @@ def make_attendance(student,attreq_id,status):
     att_create = Attendance.objects.create(student=student,attendanceReq_id=attreq_id,status=status)
     att_create.save()
 
-def ajaxPost(post,**kwargs):# for DetailCourse
+def editSubsection(post,**kwargs):# for DetailCourse
     obj = models.SubSection.objects.get(pk=post['pk'])
     form = kwargs['form'](post,instance=obj)
     if form.is_valid():
@@ -103,6 +104,11 @@ def ajaxPost(post,**kwargs):# for DetailCourse
         return JsonResponse({"instance": ser_instance}, status=200)
     return JsonResponse({"error": "COK"}, status=400)
 
+def ajaxPost(post,**kwargs):
+    form = kwargs['form']
+    if form.is_valid():
+        instance = form.save()
+    return JsonResponse({"error": "COK"}, status=400)
 
 def check_no_double_attend(object,request):
     student = Student.objects.get(user=request.user)

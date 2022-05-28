@@ -7,7 +7,7 @@ from django.contrib.admin.widgets import AdminSplitDateTime,AdminTimeWidget
 class AddSubCourse(forms.ModelForm):
     class Meta:
         model = models.SubCourse
-        exclude = ['course_id','subsection_id','slug']
+        exclude = ['course_id','sub_id','slug']
 
 class AddSection(forms.ModelForm):
     class Meta:

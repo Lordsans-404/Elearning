@@ -10,12 +10,6 @@
         Haloo
     {% endblock title %}
     {% block link %}
-    <script src="{% url 'js-catlog' %}"></script>
-    <script src="{% static '/admin/js/core.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
-    <script src="/static/admin/js/calendar.js"></script>
-    <script src="/static/admin/js/admin/DateTimeShortcuts.js"></script>
     {% endblock link %}
 </head>
 <body>
@@ -66,13 +60,13 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                            <form onsubmit="postPrevDefault('{{key.pk}}',event)" class="title-form" id="title-form-{{key.pk}}">
+                            <form onsubmit="postPrevDefault('#title-form-{{key.pk}}',event)" class="title-form" id="title-form-{{key.pk}}">
                                 {% csrf_token %}
                                 <input type="hidden" name="pk" value="{{key.pk}}">
                                 <input type="hidden" name="form-type" value="2">
                                 <label for="title" class="text-dark">Title : </label>
                                 {{form2.title}}
-                                <a onclick="postPrevDefault('{{key.pk}}',event)" class="btn btn-primary">Submit</a>
+                                <a onclick="postPrevDefault('#title-form-{{key.pk}}',event)" class="btn btn-primary">Submit</a>
                             </form>
                             </div>
                         </div>
@@ -93,7 +87,7 @@
             </div>
             <ul>
                 {% for value in values %}
-                    {% if val.name %}
+                    {% if value.name %}
                         <li><a href="{% url 'subcourse:sub_course' course.id value.get_slug%}">{{value}}</a></li>   
                     {% else %}
                         <li><a href="{% url 'subcourse:assignment' course.id value.get_slug%}">{{value}}</a></li>   
@@ -176,8 +170,8 @@
         // every time form is submitted or button get clicked call this function
         function postPrevDefault(id,e){
             e.preventDefault();
-            var id_form = '#title-form-'+id
-            var serializedata = $(id_form).serialize()
+            console.log('broo knp dah')
+            var serializedata = $(id).serialize()
             $.ajax({
                 type: 'POST',
                 url: "{% url 'courses_page' course.pk %}",
@@ -196,22 +190,30 @@
             })
         }
 
-        function testFunction(id,type,e){
+        function testFunction(pk,type,e){
             var form3 = (`
-                <form>
+                <form id='form-sbcs-${pk}'>
                     {% csrf_token %}
+                    <input type="hidden" name="form-type" value="3">
+                    <input type="hidden" name="course_id" value="{{course.id}}">
+                    <input type="hidden" name="sub_id" value="${pk}">
                     {{form3.name.label}}
                     {{form3.name}}<br>
                     {{form3.content1.label}}
                     {{form3.content1}}<br>
                     {{form3.content2.label}}
                     {{form3.content2}}<br>
-                    <a onclick="" class="btn btn-primary">Submit</a>
+                    <a onclick="postPrevDefault('#form-sbcs-${pk}',event)" class="btn btn-primary">Submit</a>
                 </form>
                 `)
+            // ${pk} sama seperti 'The lazy {} {} over the {}'.format(var3, var2, var1)
+            // BTW 'pk' ini adalah 'pk' nya subsection yaa
             var form4 = (
-                `<form>
-                    {% csrf_token %}                   
+                `<form id='form-asgt-${pk}'>
+                    {% csrf_token %}            
+                    <input type="hidden" name="form-type" value="4">
+                    <input type="hidden" name="course_id" value="{{course.id}}">
+                    <input type="hidden" name="sub_id" value="${pk}">
                     {{form4.title.label}}
                     {{form4.title}}<br>
                     {{form4.description.label}}
@@ -224,7 +226,7 @@
                     {{form4.closed_time}}<br>
                     {{form4.is_closed.label}}
                     {{form4.is_closed}}<br>
-                    <a onclick="" class="btn btn-primary">Submit</a>
+                    <a onclick="postPrevDefault('#form-asgt-${pk}',event)" class="btn btn-primary">Submit</a>
                 </form>`
 
             );
@@ -232,11 +234,15 @@
                 $('#body-form').empty()
                 $('#body-form').append(form3)
             }
+            
             else if(type === 'asgt'){
                 $('#body-form').empty()
                 $('#body-form').append(form4)
                 $(".date-time").flatpickr(flat_conf)
 
+            }
+            else{
+                $('#body-form').empty()
             }
         }
 

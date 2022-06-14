@@ -53,7 +53,6 @@ class DetailCourse(LoginRequiredMixin,SingleObjectMixin,View):# this view for co
         if request.user.user_type == 'Tcr':
             post = request.POST
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                print(post)
                 if post['form-type'] == "2":
                     return utils.editSubsection(post,**{"kwargs":kwargs,"form":self.form2})
                 elif post['form-type'] == "3":

@@ -25,7 +25,8 @@ def Context_Std(user,**kwargs):
         section_course = {}
         for section in section_list:
             subcourse = models.SubCourse.objects.filter(sub_id=section.pk)
-            section_course[section] = subcourse
+            assignment = models.Assignment.objects.filter(sub_id=section.pk)
+            section_course[section] = sorted(itertools.chain(subcourse,assignment),key=attrgetter('date_time'))
         context['section_course'] = section_course
         
     return context
@@ -105,9 +106,20 @@ def editSubsection(post,**kwargs):# for DetailCourse
     return JsonResponse({"error": "COK"}, status=400)
 
 def ajaxPost(post,**kwargs):
-    form = kwargs['form']
+    form = kwargs['form'](post)
     if form.is_valid():
-        instance = form.save()
+        cleaned = form.cleaned_data
+        if post['form-type'] == '3':
+            instance = models.SubCourse.objects.create(
+                course_id=Course.objects.get(pk=post['course_id']),
+                sub_id=models.SubSection.objects.get(pk=post['sub_id']),
+                name=cleaned['name'],
+                content1=cleaned['content1'],
+                content2=cleaned['content2']
+            )
+            instance.save()
+            ser_instance = serializers.serialize('json', [ instance, ])
+            return JsonResponse({'instance':ser_instance},status=200)
     return JsonResponse({"error": "COK"}, status=400)
 
 def check_no_double_attend(object,request):

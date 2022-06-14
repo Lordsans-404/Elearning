@@ -7,7 +7,7 @@ from django.contrib.admin.widgets import AdminSplitDateTime,AdminTimeWidget
 class AddSubCourse(forms.ModelForm):
     class Meta:
         model = models.SubCourse
-        exclude = ['course_id','sub_id','slug']
+        exclude = ['slug']
 
 class AddSection(forms.ModelForm):
     class Meta:
@@ -19,5 +19,5 @@ class FormAssignmentTcr(forms.ModelForm):
     closed_time = forms.SplitDateTimeField(widget=forms.DateTimeInput(attrs={'class':'date-time'}))
     class Meta:
         model = models.Assignment
-        exclude = ["slug",'course_id','sub_id']
+        exclude = ["slug"]
 
